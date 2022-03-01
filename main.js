@@ -32,24 +32,59 @@ function pAequorFactory(specimenNum, dna) {
         const percentageCommonDNA = Math.round(this.dna.filter( (base, index) => base === pAequor.dna[index] ).length * 100 / this.dna.length);
         return `Specimen #${this.specimenNum} and specimen #${pAequor.specimenNum} have ${percentageCommonDNA}% in common.`
       } else return 'error';
+    },
+    willLikelySurvive() {
+      const likelihood = this.dna.filter( base => base === 'C' || base === 'G' ).length * 100 / this.dna.length;
+      // console.log(`Likelihood of survival of specimen #${this.specimenNum}:  ${likelihood}%`);
+      return likelihood > 60;
+    },
+    complementaryStrand() {
+      return this.dna.map ( base => {
+        switch(base) {
+          case 'A':
+            return 'T';
+            break;
+          case 'T':
+            return 'A';
+            break;
+          case 'C':
+            return 'G';
+            break;
+          case 'G':
+            return 'C';
+            break;
+          default:
+            return null;
+        }
+      })
     }
+
   };
 }
 
 /* Testing pAequorFactory(specimenNum, dna) in particular the methods mutate() and compareDNA() */
 const pAequor1 = pAequorFactory(1, mockUpStrand());
+console.log(pAequor1.willLikelySurvive());
 const pAequor2 = pAequorFactory(2, mockUpStrand());
+console.log(pAequor2.willLikelySurvive());
+console.log(pAequor1.compareDNA(pAequor2));
+console.log(pAequor1.dna);
+console.log(pAequor1.complementaryStrand());
+console.log(pAequor1.willLikelySurvive());
 console.log(pAequor1.compareDNA(pAequor2));
 pAequor1.mutate();
+console.log(pAequor1.willLikelySurvive());
 console.log(pAequor1.compareDNA(pAequor2));
 pAequor1.mutate();
+console.log(pAequor1.willLikelySurvive());
 console.log(pAequor1.compareDNA(pAequor2));
-pAequor1.mutate();
-console.log(pAequor1.compareDNA(pAequor2));
 
+const pAequorArray = [];
+for ( i = 0; i < 30; i++ ) { pAequorArray.push(pAequorFactory(( i + 1 ), mockUpStrand())) }
 
-
-
+function mostRelatedSpecimen(pAequorArray) {
+  pAequorArray.forEach()
+}
 
 
 
