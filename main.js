@@ -29,13 +29,11 @@ function pAequorFactory(specimenNum, dna) {
     },
     compareDNA(pAequor) { // compares the bases of two DNA array of the same length and returns a sentence including the percentage of common DNA
       if (pAequor instanceof Object && typeof pAequor.specimenNum === 'number' && pAequor.dna instanceof Array && this.dna.length === pAequor.dna.length) {
-        const percentageCommonDNA = Math.round(this.dna.filter( (base, index) => base === pAequor.dna[index] ).length * 100 / this.dna.length);
-        return `Specimen #${this.specimenNum} and specimen #${pAequor.specimenNum} have ${percentageCommonDNA}% in common.`
+        return percentageCommonDNA = this.dna.filter( (base, index) => base === pAequor.dna[index] ).length * 100 / this.dna.length;
       } else return 'error';
     },
     willLikelySurvive() {
       const likelihood = this.dna.filter( base => base === 'C' || base === 'G' ).length * 100 / this.dna.length;
-      // console.log(`Likelihood of survival of specimen #${this.specimenNum}:  ${likelihood}%`);
       return likelihood > 60;
     },
     complementaryStrand() {
@@ -58,11 +56,79 @@ function pAequorFactory(specimenNum, dna) {
         }
       })
     }
-
   };
 }
 
-/* Testing pAequorFactory(specimenNum, dna) in particular the methods mutate() and compareDNA() */
+function mostRelatedSpecimens(pAequors) {
+  if (pAequors.length > 2) {
+    let mostRelated = [];
+    let mostCommonBases = -1;
+    let commonBases = -1;
+    let pAequorI, pAequorJ;
+
+    for (let i = 0; i < pAequors.length - 1 ; i++) {
+      for (let j = i + 1; j < pAequors.length ; j++) {
+        pAequorI = pAequors[i];
+        pAequorJ = pAequors[j];
+        commonBases = pAequorI.compareDNA(pAequorJ);
+        if ( commonBases === mostCommonBases ) {
+          mostRelated.push([pAequorI, pAequorJ]);
+        } else if ( commonBases > mostCommonBases ) {
+          mostRelated = [[pAequorI, pAequorJ]];
+          mostCommonBases = commonBases;
+        }
+      }
+    }
+    let result = `The number of most common bases is ${mostCommonBases}% and can be found between `;
+    mostRelated.forEach( (pair, index) => {
+      if (mostRelated.length === 1) {
+        result += `specimen #${pair[0].specimenNum} and specimen #${pair[1].specimenNum}.`;
+      } else {
+        if (index < mostRelated.length - 1) {
+          result += `specimen #${pair[0].specimenNum} and specimen #${pair[1].specimenNum}, `;
+        } else {
+          result += `and, specimen #${pair[0].specimenNum} and specimen #${pair[1].specimenNum}.`;
+        }
+      }
+    });
+    return result;
+  }
+}
+
+function mostRelatedSpecimensWithReduce(pAequors) {
+  
+  let listUniqueSpecimenPairs = pAequors.reduce( (accumulatedList, pAequorI, index) => 
+    accumulatedList.concat(pAequors.slice( index + 1 ).map( pAequorJ => [pAequorI, pAequorJ, pAequorI.compareDNA(pAequorJ)] )),
+  []);
+
+  let commonBases = listUniqueSpecimenPairs.map( (commonBaseIJ) => {
+    return commonBaseIJ[2];
+  });
+
+  let mostCommonBases = Math.max.apply(null, commonBases);
+  
+  let mostRelated = listUniqueSpecimenPairs.filter( commonBaseIJ => {
+    return commonBaseIJ[2] === mostCommonBases;
+  });
+
+  let result = `The number of most common bases is ${mostCommonBases}% and can be found between `;
+     mostRelated.forEach( (commonBaseIJ, index) => {
+       if (mostRelated.length === 1) {
+         result += `specimen #${commonBaseIJ[0].specimenNum} and specimen #${commonBaseIJ[1].specimenNum}.`;
+       } else {
+         if (index < mostRelated.length - 1) {
+           result += `specimen #${commonBaseIJ[0].specimenNum} and specimen #${commonBaseIJ[1].specimenNum}, `;
+         } else {
+           result += `and, specimen #${commonBaseIJ[0].specimenNum} and specimen #${commonBaseIJ[1].specimenNum}.`;
+         }
+       }
+     });
+     return result;
+}
+
+/* Testing pAequorFactory(specimenNum, dna) in particular the methods:
+mutate(), compareDNA(), willLikelySurvive() and complementaryStrand()
+
 const pAequor1 = pAequorFactory(1, mockUpStrand());
 console.log(pAequor1.willLikelySurvive());
 const pAequor2 = pAequorFactory(2, mockUpStrand());
@@ -77,15 +143,15 @@ console.log(pAequor1.willLikelySurvive());
 console.log(pAequor1.compareDNA(pAequor2));
 pAequor1.mutate();
 console.log(pAequor1.willLikelySurvive());
-console.log(pAequor1.compareDNA(pAequor2));
+console.log(pAequor1.compareDNA(pAequor2));*/
 
+/* Testing the function mostRelatedSpecimens() */
 const pAequorArray = [];
-for ( i = 0; i < 30; i++ ) { pAequorArray.push(pAequorFactory(( i + 1 ), mockUpStrand())) }
-
-function mostRelatedSpecimen(pAequorArray) {
-  pAequorArray.forEach()
+for ( i = 0; i < 5; i++ ) { 
+  pAequorArray.push( pAequorFactory(( i + 1 ), mockUpStrand()) ); 
 }
-
+console.log(mostRelatedSpecimens(pAequorArray));
+console.log(mostRelatedSpecimensWithReduce(pAequorArray));
 
 
 
