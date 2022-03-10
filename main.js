@@ -60,6 +60,7 @@ function pAequorFactory(specimenNum, dna) {
 }
 
 function mostRelatedSpecimens(pAequors) {
+  // Computes the list of specimen pairs with most related DNA percentage using a double loop on indices
   if (pAequors.length > 2) {
     let mostRelated = [];
     let mostCommonBases = -1;
@@ -96,7 +97,7 @@ function mostRelatedSpecimens(pAequors) {
 }
 
 function mostRelatedSpecimensWithReduce(pAequors) {
-  
+  // Computes the list of specimen pairs with most related DNA percentage using a reduce function
   let listUniqueSpecimenPairs = pAequors.reduce( (accumulatedList, pAequorI, index) => 
     accumulatedList.concat(pAequors.slice( index + 1 ).map( pAequorJ => [pAequorI, pAequorJ, pAequorI.compareDNA(pAequorJ)] )),
   []);
